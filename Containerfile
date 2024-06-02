@@ -56,6 +56,25 @@ RUN mkdir -p /var/lib/alternatives && \
     /tmp/build.sh && \
     ostree container commit
 
+# Install Waydroid
+RUN curl -Lo /etc/yum.repos.d/_copr_kylegospo-bazzite.repo https://copr.fedorainfracloud.org/coprs/kylegospo/bazzite/repo/fedora-"${FEDORA_MAJOR_VERSION}"/kylegospo-bazzite-fedora-"${FEDORA_MAJOR_VERSION}".repo && \
+    ostree container commit
+RUN rpm-ostree install waydroid && ostree container commit
+# Bazzite does this so I will do it too
+RUN sed -i~ -E 's/=.\$\(command -v (nft|ip6?tables-legacy).*/=/g' /usr/lib/waydroid/data/scripts/waydroid-net.sh && \
+    ostree container commit
+
+# Enable the Bazzite Waydroid Justfile
+RUN echo "import \"/usr/share/ublue-os/just/82-bazzite-waydroid.just\"" >> /usr/share/ublue-os/justfile && \
+    ostree container commit
+
+RUN systemctl enable waydroid-workaround.service && \
+    systemctl disable waydroid-container.service && \
+    ostree container commit
+
+RUN curl -Lo /usr/bin/waydroid-choose-gpu https://raw.githubusercontent.com/KyleGospo/waydroid-scripts/main/waydroid-choose-gpu.sh && \
+    chmod +x /usr/bin/waydroid-choose-gpu && \
+    ostree container commit
 
     
 ## NOTES:
