@@ -57,6 +57,8 @@ RUN mkdir -p /var/lib/alternatives && \
     ostree container commit
 
 # Install Waydroid
+RUN curl -Lo /etc/yum.repos.d/_copr_kylegospo-bazzite.repo https://copr.fedorainfracloud.org/coprs/kylegospo/bazzite/repo/fedora-"${FEDORA_MAJOR_VERSION}"/kylegospo-bazzite-fedora-"${FEDORA_MAJOR_VERSION}".repo && \
+    ostree container commit
 RUN rpm-ostree install waydroid && ostree container commit
 RUN rpm-ostree install cage wlr-randr && ostree container commit
 # Bazzite does this so I will do it too
