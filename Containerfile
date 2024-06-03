@@ -77,6 +77,10 @@ RUN curl -Lo /usr/bin/waydroid-choose-gpu https://raw.githubusercontent.com/Kyle
     chmod +x /usr/bin/waydroid-choose-gpu && \
     ostree container commit
 
+# Disable the Bazzite repo now that we've gotten the packages from it
+RUN sed -i 's@enabled=1@enabled=0@g' /etc/yum.repos.d/_copr_kylegospo-bazzite.repo && \
+    ostree container commit
+
     
 ## NOTES:
 # - /var/lib/alternatives is required to prevent failure with some RPM installs
