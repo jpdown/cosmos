@@ -1,3 +1,5 @@
+#!/usr/bin/bash
+
 # WAYDROID FIX
 if [[ -f "/var/lib/waydroid/lxc/waydroid/config" ]]; then
   echo "Removing unneeded apparmor entry from Waydroid LXC"
