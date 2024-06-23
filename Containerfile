@@ -53,6 +53,7 @@ COPY system_files /
 COPY build_files /tmp/
 
 RUN mkdir -p /var/lib/alternatives && \
+    mkdir -p /var/tmp && \
     /tmp/build.sh && \
     ostree container commit
 
