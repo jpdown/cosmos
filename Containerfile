@@ -50,11 +50,7 @@ FROM ghcr.io/ublue-os/${SOURCE_IMAGE}${SOURCE_SUFFIX}:${SOURCE_TAG}
 
 COPY system_files /
 
-COPY build_files /tmp/
-
 RUN mkdir -p /var/lib/alternatives && \
-    mkdir -p /var/tmp && \
-    /tmp/build.sh && \
     ostree container commit
 
 # Install Waydroid
@@ -83,6 +79,12 @@ RUN systemctl enable waydroid-config-fix.service && ostree container commit
 
 # Disable the Bazzite repo now that we've gotten the packages from it
 RUN sed -i 's@enabled=1@enabled=0@g' /etc/yum.repos.d/_copr_kylegospo-bazzite.repo && \
+    ostree container commit
+
+
+# Setup LGHD2 disable workaround
+RUN echo "import \"/usr/share/ublue-os/just/99-lghd2.just\"" >> /usr/share/ublue-os/justfile && \
+    systemctl enable disable-lghd2.service && \
     ostree container commit
 
     

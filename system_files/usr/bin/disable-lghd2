@@ -1,0 +1,9 @@
+#!/bin/bash
+
+LGHD2="1912:0015"
+BUS_PATH=$(grep PCI_ID=$LGHD2 /sys/bus/pci/devices/*/uevent | cut -d'/' -f 6)
+
+if [[ -n $BUS_PATH ]]; then
+    echo "$BUS_PATH" > /sys/bus/pci/devices/$BUS_PATH/driver/unbind
+    echo "Disabled LGHD2"
+fi

@@ -1,0 +1,12 @@
+[Unit]
+Description=Unbinds the USB driver for the Live Gamer HD 2
+After=rpm-ostreed.service
+Before=systemd-user-sessions.service
+
+[Service]
+Type=oneshot
+RemainAfterExit=yes
+ExecStart=/usr/bin/disable-lghd2
+
+[Install]
+WantedBy=multi-user.target
