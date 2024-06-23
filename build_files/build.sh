@@ -23,4 +23,5 @@ RELEASE="$(rpm -E %fedora)"
 # systemctl enable podman.socket
 
 # Install driverctl (TODO can i set up the pci-stub in this repo)
-rpm-ostree install driverctl
+#rpm-ostree install driverctl
+/tmp/build-initramfs.sh
