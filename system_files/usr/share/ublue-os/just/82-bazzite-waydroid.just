@@ -13,36 +13,27 @@ setup-waydroid ACTION="":
       echo "Usage: ujust configure-waydroid <option>"
       echo "  <option>: Specify the quick option to skip the prompt"
       echo "  Use 'init' to select Initialize Waydroid"
-      echo "  Use 'configure' to select Configure Waydroid"
-      echo "  Use 'gpu' to choose Select GPU for Waydroid"
-      echo "  Use 'integration' to enable desktop window integration for Waydroid"
-      echo "  Use 'reset' to select Configure Waydroid"
+      echo "  Use 'play' to select Play Store Certification"
+      echo "  Use 'reset' to select Reset Waydroid"
+      echo "  Use 'fix' to run the config fixer manually"
       exit 0
     elif [ "$OPTION" == "" ]; then
       echo "${bold}Waydroid Setup${normal}"
-      echo "Please read the $(Urllink "https://universal-blue.discourse.group/docs?topic=32" "Waydroid setup documentation") before continuing"
-      OPTION=$(Choose "Initialize Waydroid" "Configure Waydroid" "Select GPU for Waydroid" "Reset Waydroid (also removes waydroid-related files from user folder)")
+      OPTION=$(Choose "Initialize Waydroid" "Play Store Certification" "Reset Waydroid (also removes waydroid-related files from user folder)" "Fix Config")
     fi
     if [[ "${OPTION,,}" =~ ^init ]]; then
-      if [[ ! $IMAGE_NAME =~ "deck" && ! $IMAGE_NAME =~ "ally" && ! $IMAGE_NAME =~ "framegame" ]]; then
-        sudo systemctl enable --now waydroid-container
-      fi
-      sudo waydroid init -c 'https://ota.waydro.id/system' -v 'https://ota.waydro.id/vendor'
-      echo "Waydroid has been initialized, please run waydroid once before you Configure Waydroid"
-    elif [[ "${OPTION,,}" =~ ^configure ]]; then
-      git clone https://github.com/ublue-os/waydroid_script.git --depth 1 /tmp/waydroid_script
-      python -m venv /tmp/waydroid_script/venv
-      source /tmp/waydroid_script/venv/bin/activate
-      sudo pip install -r /tmp/waydroid_script/requirements.txt
-      sudo /tmp/waydroid_script/main.py
-      deactivate
-      sudo rm -rf /tmp/waydroid_script
-    elif [[ "${OPTION,,}" =~ gpu ]]; then
-      sudo /usr/bin/waydroid-choose-gpu
-    elif [[ "${OPTION,,}" =~ integration ]]; then
-      waydroid prop set persist.waydroid.multi_windows true
+      sudo systemctl enable --now waydroid-container
+      sudo waydroid init -s GAPPS -c 'https://ota.waydro.id/system' -v 'https://ota.waydro.id/vendor' -f
+    elif [[ "${OPTION,,}" =~ ^play ]]; then
+      echo "Grabbing Play Store certification ID"
+      echo "Place the following string into https://www.google.com/android/uncertified and then wait before restarting Waydroid
+      sudo waydroid shell 'ANDROID_RUNTIME_ROOT=/apex/com.android.runtime ANDROID_DATA=/data ANDROID_TZDATA_ROOT=/apex/com.android.tzdata ANDROID_I18N_ROOT=/apex/com.android.i18n sqlite3 /data/data/com.google.android.gsf/databases/gservices.db "select * from main where name = \"android_id\";"'
     elif [[ "${OPTION,,}" =~ ^reset ]]; then
       echo "Resetting Waydroid"
+      sudo systemctl disable --now waydroid-container
       bash -c 'sudo rm -rf /var/lib/waydroid /home/.waydroid ~/waydroid ~/.share/waydroid ~/.local/share/applications/*aydroid* ~/.local/share/waydroid'
       echo "Waydroid has been reset"
+    elif [[ "${OPTION,,}" =~ ^fix ]]; then
+      echo "Fixing Waydroid config"
+      sudo /usr/libexec/waydroid-config-fix
     fi
