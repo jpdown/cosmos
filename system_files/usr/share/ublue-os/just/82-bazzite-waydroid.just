@@ -26,8 +26,8 @@ setup-waydroid ACTION="":
       sudo waydroid init -s GAPPS -c 'https://ota.waydro.id/system' -v 'https://ota.waydro.id/vendor' -f
     elif [[ "${OPTION,,}" =~ ^play ]]; then
       echo "Grabbing Play Store certification ID"
-      echo "Place the following string into https://www.google.com/android/uncertified and then wait before restarting Waydroid
-      sudo waydroid shell 'ANDROID_RUNTIME_ROOT=/apex/com.android.runtime ANDROID_DATA=/data ANDROID_TZDATA_ROOT=/apex/com.android.tzdata ANDROID_I18N_ROOT=/apex/com.android.i18n sqlite3 /data/data/com.google.android.gsf/databases/gservices.db "select * from main where name = \"android_id\";"'
+      echo "Place the following numerical string into https://www.google.com/android/uncertified and then wait before restarting Waydroid"
+      sudo waydroid shell env ANDROID_RUNTIME_ROOT=/apex/com.android.runtime ANDROID_DATA=/data ANDROID_TZDATA_ROOT=/apex/com.android.tzdata ANDROID_I18N_ROOT=/apex/com.android.i18n sqlite3 /data/data/com.google.android.gsf/databases/gservices.db "select * from main where name = \"android_id\";"
     elif [[ "${OPTION,,}" =~ ^reset ]]; then
       echo "Resetting Waydroid"
       sudo systemctl disable --now waydroid-container
