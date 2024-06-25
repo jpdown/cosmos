@@ -16,6 +16,7 @@ if [[ -f "/var/lib/waydroid/waydroid_base.prop" ]]; then
     "ro.product.build.tags=release-keys"
     "ro.vendor.build.tags=release-keys"
     "ro.odm.build.tags=release-keys"
+    "persist.waydroid.fake_wifi=com.apple.android.*"
     # user preference, default waydroid is too big
     "ro.sf.lcd_density=135"
   )
