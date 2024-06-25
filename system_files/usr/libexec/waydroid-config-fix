@@ -5,3 +5,33 @@ if [[ -f "/var/lib/waydroid/lxc/waydroid/config" ]]; then
   echo "Removing unneeded apparmor entry from Waydroid LXC"
   sed -i '/lxc\.apparmor\.profile\s*=\s*unconfined/d' "/var/lib/waydroid/lxc/waydroid/config"
 fi
+
+# fix config for apple music compat
+if [[ -f "/var/lib/waydroid/waydroid_base.prop" ]]; then
+  PROPS=(
+    "ro.adb.secure=1"
+    "ro.debuggable=0"
+    "ro.build.selinux=1"
+    "ro.build.tags=release-keys"
+    "ro.product.build.tags=release-keys"
+    "ro.vendor.build.tags=release-keys"
+    "ro.odm.build.tags=release-keys"
+    # user preference, default waydroid is too big
+    "ro.sf.lcd_density=135"
+  )
+  
+  for propval in "${PROPS[@]}"; do
+    # check if the prop exists, remove the line if so, then append
+    prop=$(echo "$propval" | cut -d'=' -f1)
+    value=$(echo "$propval" | cut -d'=' -f2)
+
+    if ! grep -q "$prop" /var/lib/waydroid/waydroid_base.prop; then
+      # prop doesn't exist at all, put it in as a new line
+      echo "$prop=$value" >> /var/lib/waydroid/waydroid_base.prop
+      echo "Added prop $propval"
+    else
+      sed -i "s/$prop=.*/$prop=$value/g" /var/lib/waydroid/waydroid_base.prop
+      echo "Edited prop $propval"
+    fi
+  done
+fi
