@@ -15,7 +15,7 @@
 # - "base"
 #
 #  "aurora", "bazzite", "bluefin" or "ucore" may also be used but have different suffixes.
-ARG SOURCE_IMAGE="aurora"
+ARG SOURCE_IMAGE="bazzite"
 
 ## SOURCE_SUFFIX arg should include a hyphen and the appropriate suffix name
 # These examples all work for silverblue/kinoite/sericea/onyx/lazurite/vauxite/base
@@ -33,10 +33,10 @@ ARG SOURCE_IMAGE="aurora"
 # - stable-zfs
 # - stable-nvidia-zfs
 # - (and the above with testing rather than stable)
-ARG SOURCE_SUFFIX="-dx"
+ARG SOURCE_SUFFIX="-gnome"
 
 ## SOURCE_TAG arg must be a version built for the specific image: eg, 39, 40, gts, latest
-ARG SOURCE_TAG="latest"
+ARG SOURCE_TAG="stable"
 
 
 ### 2. SOURCE IMAGE
@@ -51,34 +51,6 @@ FROM ghcr.io/ublue-os/${SOURCE_IMAGE}${SOURCE_SUFFIX}:${SOURCE_TAG}
 COPY system_files /
 
 RUN mkdir -p /var/lib/alternatives && \
-    ostree container commit
-
-# Install Waydroid
-RUN curl -Lo /etc/yum.repos.d/_copr_kylegospo-bazzite.repo https://copr.fedorainfracloud.org/coprs/kylegospo/bazzite/repo/fedora-"${FEDORA_MAJOR_VERSION}"/kylegospo-bazzite-fedora-"${FEDORA_MAJOR_VERSION}".repo && \
-    ostree container commit
-# lzip is needed for the waydroid configuration script
-RUN rpm-ostree install waydroid lzip && ostree container commit
-# Bazzite does this so I will do it too
-RUN sed -i~ -E 's/=.\$\(command -v (nft|ip6?tables-legacy).*/=/g' /usr/lib/waydroid/data/scripts/waydroid-net.sh && \
-    ostree container commit
-
-# Enable the Bazzite Waydroid Justfile
-RUN echo "import \"/usr/share/ublue-os/just/82-bazzite-waydroid.just\"" >> /usr/share/ublue-os/justfile && \
-    ostree container commit
-
-RUN systemctl enable waydroid-workaround.service && \
-    systemctl disable waydroid-container.service && \
-    ostree container commit
-
-RUN curl -Lo /usr/bin/waydroid-choose-gpu https://raw.githubusercontent.com/KyleGospo/waydroid-scripts/main/waydroid-choose-gpu.sh && \
-    chmod +x /usr/bin/waydroid-choose-gpu && \
-    ostree container commit
-
-# Enable the Waydroid config fix service
-RUN systemctl enable waydroid-config-fix.service && ostree container commit
-
-# Disable the Bazzite repo now that we've gotten the packages from it
-RUN sed -i 's@enabled=1@enabled=0@g' /etc/yum.repos.d/_copr_kylegospo-bazzite.repo && \
     ostree container commit
 
 
