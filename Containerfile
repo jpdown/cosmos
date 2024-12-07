@@ -53,6 +53,8 @@ COPY system_files /
 RUN mkdir -p /var/lib/alternatives && \
     ostree container commit
 
+RUN rpm-ostree install edk2-ovmf libvirt qemu virt-manager && \
+    ostree container commit
 
 # Setup LGHD2 disable workaround
 RUN echo "import \"/usr/share/ublue-os/just/99-lghd2.just\"" >> /usr/share/ublue-os/justfile && \
